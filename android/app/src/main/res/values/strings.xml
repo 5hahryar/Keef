@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Keef</string>
+    <string name="dashboard">داشبورد</string>
+    <string name="expenses">هزینه ها</string>
+    <string name="new_transaction">تراکنش جدید</string>
+    <string name="tap_to_login_with_biometrics">برای ورود با اثر انگشت کلیک کنید</string>
+    <string name="total_expenses">جمع مخارج این ماه</string>
+    <string name="categories">دسته‌بندی ها</string>
+    <string name="no_transaction_found">تراکنشی یافت نشد!</string>
+    <string name="select_category">انتخاب دسته‌بندی</string>
+    <string name="title">عنوان</string>
+    <string name="payment_amount">مبلغ</string>
+    <string name="category">دسته‌بندی</string>
+    <string name="add">اضافه کن</string>
+    <string name="bank">بانک</string>
+</resources>
