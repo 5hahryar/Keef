@@ -1,3 +1,15 @@
+// @title Keef API
+// @version 1.0
+// @description A financial tracking API
+
+// @host localhost:8080
+// @BasePath /api
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @description Bearer token authentication
+
 package main
 
 import (
@@ -6,7 +18,11 @@ import (
 	"keef/middlewares"
 	"os"
 
+	_ "keef/docs" // This line is necessary for go mod tidy
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -15,6 +31,8 @@ func main() {
 
 	router := gin.Default()
 	api := router.Group("/api")
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	transactions := api.Group("/transactions")
 	{

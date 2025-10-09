@@ -9,6 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateTransaction godoc
+// @Summary Create a new transaction
+// @Description Create a new financial transaction for the authenticated user
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param transaction body models.Transaction true "Transaction data"
+// @Success 201 {object} map[string]int "id"
+// @Failure 400 {object} map[string]string "message"
+// @Failure 500 {object} map[string]string "message"
+// @Router /transactions/create [post]
 func CreateTransaction(ctx *gin.Context) {
 	var transaction models.Transaction
 
@@ -27,6 +39,18 @@ func CreateTransaction(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, id)
 }
 
+// GetTransactions godoc
+// @Summary Get user transactions
+// @Description Retrieve paginated transactions for the authenticated user with optional category filter
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param page query int true "Page number"
+// @Param category query string false "Category filter"
+// @Success 200 {array} models.Transaction "List of transactions"
+// @Failure 400 {object} map[string]string "message"
+// @Router /transactions [get]
 func GetTransactions(ctx *gin.Context) {
 	page, err := strconv.Atoi(ctx.Query("page"))
 
@@ -41,6 +65,17 @@ func GetTransactions(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, transactions)
 }
 
+// DeleteTransactions godoc
+// @Summary Delete a transaction
+// @Description Delete a specific transaction by ID for the authenticated user
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "Transaction ID"
+// @Success 200 "Transaction deleted successfully"
+// @Failure 400 {object} map[string]string "message"
+// @Router /transactions/{id}/delete [delete]
 func DeleteTransactions(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

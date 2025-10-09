@@ -8,6 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetStatsTotalSpending godoc
+// @Summary Get total spending statistics
+// @Description Get total spending amount for the authenticated user with optional filters
+// @Tags statistics
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param category query string false "Category filter"
+// @Param startDate query string false "Start date (RFC3339 format)"
+// @Param endDate query string false "End date (RFC3339 format)"
+// @Success 200 {object} map[string]interface{} "Total spending amount"
+// @Failure 400 {object} map[string]string "message"
+// @Router /statistics/total-spent [get]
 func GetStatsTotalSpending(ctx *gin.Context) {
 	var startDate *time.Time
 	var endDate *time.Time
@@ -37,6 +50,18 @@ func GetStatsTotalSpending(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, total)
 }
 
+// GetStatsTotalSpendingByCategory godoc
+// @Summary Get spending statistics by category
+// @Description Get total spending amount grouped by category for the authenticated user
+// @Tags statistics
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param startDate query string false "Start date (RFC3339 format)"
+// @Param endDate query string false "End date (RFC3339 format)"
+// @Success 200 {object} map[string]interface{} "Spending by category"
+// @Failure 400 {object} map[string]string "message"
+// @Router /statistics/total-spent-category [get]
 func GetStatsTotalSpendingByCategory(ctx *gin.Context) {
 	var startDate *time.Time
 	var endDate *time.Time
