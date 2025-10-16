@@ -1,13 +1,10 @@
 package com.keef.keef.ui.home.newTransaction
 
-import android.content.ClipDescription
-import android.content.ClipboardManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keef.keef.common.Event
 import com.keef.keef.common.Resource
-import com.keef.keef.common.readMessage
 import com.keef.keef.model.Bank
 import com.keef.keef.model.Category
 import com.keef.keef.model.Transaction
@@ -16,7 +13,6 @@ import com.keef.keef.data.TransactionRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 

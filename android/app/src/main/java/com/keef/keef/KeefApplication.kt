@@ -60,7 +60,7 @@ class KeefApplication: Application() {
 
                 defaultRequest {
                     contentType(ContentType.Application.Json)
-                    url(BuildConfig.BASE_URL)
+                    url("${BuildConfig.BASE_URL}api/")
                 }
 
                 install(Auth) {
