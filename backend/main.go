@@ -13,23 +13,47 @@
 package main
 
 import (
+	"fmt"
 	"keef/controllers"
 	"keef/database"
 	"keef/middlewares"
 	"os"
+	"strings"
 
 	_ "keef/docs" // This line is necessary for go mod tidy
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Warning: .env file not found, reading from system environment")
+	}
+	
 	database.Connect()
 	database.Seed()
 
 	router := gin.Default()
+
+	originsEnv := os.Getenv("CORS_ALLOW_ORIGINS")
+	var allowOrigins []string
+	if originsEnv != "" {
+		allowOrigins = strings.Split(originsEnv, ",")
+	}
+	defConf := cors.Config{
+		AllowOrigins:     allowOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+	}
+	router.Use(cors.New(defConf))
+	
 	api := router.Group("/api")
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -37,7 +61,7 @@ func main() {
 	transactions := api.Group("/transactions")
 	{
 		transactions.Use(middlewares.AuthMiddleware())
-		transactions.GET("/", controllers.GetTransactions)
+		transactions.GET("", controllers.GetTransactions)
 		transactions.POST("/create", controllers.CreateTransaction)
 		transactions.DELETE("/:id/delete", controllers.DeleteTransactions)
 	}
