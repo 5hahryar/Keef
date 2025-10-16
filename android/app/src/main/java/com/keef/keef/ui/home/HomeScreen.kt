@@ -20,6 +20,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.keef.keef.R
 import com.keef.keef.common.Const
 import com.keef.keef.common.getPrefs
+import com.keef.keef.compose.common.components.MediumText
 import com.keef.keef.compose.common.components.TotalHeader
 import com.keef.keef.compose.common.components.lazyLists.TransactionsLazyList
 import com.keef.keef.model.Category
@@ -80,10 +81,15 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToAddTransaction) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = "")
-            }
+            ExtendedFloatingActionButton(
+                onClick = onNavigateToAddTransaction,
+                text = { MediumText(text = stringResource(R.string.new_transaction)) },
+                icon = {
+                    Icon(imageVector = Icons.Rounded.Add, contentDescription = "")
+                }
+            )
         },
+        floatingActionButtonPosition = FabPosition.Start
     ) { padding ->
         PullToRefreshBox(
             modifier = Modifier.padding(paddingValues = padding),
@@ -112,12 +118,17 @@ private fun HomeScreenContent(
     onRefreshClicked: () -> Unit,
 ) {
     when (transactions.loadState.refresh) {
-        is LoadState.Error -> ErrorScreen(message = (transactions.loadState.refresh as LoadState.Error).error.message.toString(), onRefreshClicked)
+        is LoadState.Error -> ErrorScreen(
+            message = (transactions.loadState.refresh as LoadState.Error).error.message.toString(),
+            onRefreshClicked
+        )
+
         is LoadState.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
+
         is LoadState.NotLoading -> {
             if (transactions.itemCount == 0) {
                 TransactionsEmptyView()
