@@ -1,18 +1,11 @@
-import formatShamsiDate from '../utils/ShamsiDateFormatter'
 import { useCurrentMonthCalculations } from '../hooks/useInstallments'
-
-function toPersianDigits(n: number): string {
-  return n
-    .toString()
-    .replace(/\d/g, (d) => String.fromCharCode(parseInt(d) + 0x06f0))
-}
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('fa-IR').format(Math.round(amount))
 }
 
 export default function MonthlySummary() {
-  const { monthTitle, totalThisMonth, paidThisMonth, remainingThisMonth, upcoming, loading } =
+  const { monthTitle, totalThisMonth, paidThisMonth, remainingThisMonth, loading } =
     useCurrentMonthCalculations()
   
   if (loading) {

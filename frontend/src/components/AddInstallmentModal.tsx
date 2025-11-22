@@ -10,29 +10,6 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
   const [isPartiallyPaid, setIsPartiallyPaid] = useState(false)
   const [firstPaymentDate, setFirstPaymentDate] = useState({ year: '', month: '', day: '' })
 
-  function computeFirstDueISO(): string {
-    const now = new Date()
-    const j = jalaali.toJalaali(now)
-    const selectedDay = Math.max(1, Math.min(31, parseInt(dayOfMonth || '1')))
-
-    // if today is after selected day in current J month, move to next j month
-    let jy = j.jy
-    let jm = j.jm
-    if (j.jd > selectedDay) {
-      jm += 1
-      if (jm > 12) {
-        jm = 1
-        jy += 1
-      }
-    }
-    const daysInTarget = jalaali.jalaaliMonthLength(jy, jm)
-    const jd = Math.min(selectedDay, daysInTarget)
-    const g = jalaali.toGregorian(jy, jm, jd)
-    const d = new Date(g.gy, g.gm - 1, g.gd)
-    d.setHours(0, 0, 0, 0)
-    return d.toISOString()
-  }
-
   function computeFirstPaymentDateISO(): string | undefined {
     if (!isPartiallyPaid || !firstPaymentDate.year || !firstPaymentDate.month || !firstPaymentDate.day) {
       return undefined
@@ -86,7 +63,6 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
     }
     
     try {
-      const firstDue = computeFirstDueISO()
       const firstPaymentISO = isPartiallyPaid ? computeFirstPaymentDateISO() : undefined
       
       // Create loan via API with firstPaymentDate if provided

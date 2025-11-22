@@ -1,12 +1,5 @@
-import formatShamsiDate from '../utils/ShamsiDateFormatter'
 import { type InstallmentPlan } from '../hooks/useInstallments'
 import { useNavigate } from 'react-router-dom'
-
-function toPersianDigits(n: number): string {
-  return n
-    .toString()
-    .replace(/\d/g, (d) => String.fromCharCode(parseInt(d) + 0x06f0))
-}
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('fa-IR').format(Math.round(amount))
@@ -19,7 +12,10 @@ export default function InstallmentCard({ plan, onTogglePaid }: { plan: Installm
   const per = plan.perInstallmentAmount ?? Math.round(plan.installmentAmount / plan.numberOfInstallments)
   const remainingCount = Math.max(0, plan.numberOfInstallments - plan.paidCount)
   const remainingAmount = remainingCount * per
-  const status: InstallmentStatus = "overdue"
+  let status: InstallmentStatus = "overdue"
+  if(plan.numberOfInstallments === plan.paidCount) {
+    status = "paid"
+  }
 
   return (
     <div className="bg-white rounded-3xl p-5 shadow-card">
