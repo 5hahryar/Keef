@@ -42,8 +42,8 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
     }
   
     return (
-      <div className="fixed inset-0 bg-black/40 flex items-end">
-        <div className="w-full rounded-t-3xl bg-white p-4 space-y-3">
+      <div className="modal-backdrop flex items-end">
+        <div className="w-full rounded-t-3xl bg-white p-4 space-y-3 modal-sheet">
           <div className="text-lg font-semibold text-right">تراکنش جدید</div>
           
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -106,7 +106,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
             <button 
               type="submit" 
               disabled={createTransactionMutation.isPending}
-              className="w-full rounded-pill bg-brand-blue text-white py-3 text-lg disabled:opacity-50"
+              className="w-full rounded-pill bg-brand-blue text-white py-3 text-lg disabled:opacity-50 btn btn-ripple"
             >
               {createTransactionMutation.isPending ? 'در حال اضافه کردن...' : 'اضافه کن'}
             </button>
@@ -115,7 +115,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
               type="button" 
               disabled={createTransactionMutation.isPending}
               onClick={onClose}
-              className="w-full text-red-500 py-3 text-lg disabled:opacity-50"
+              className="w-full text-red-500 py-3 text-lg disabled:opacity-50 btn"
             >
               {'انصراف'}
             </button>

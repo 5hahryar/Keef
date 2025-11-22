@@ -98,7 +98,13 @@ export default function Dashboard() {
         )}
       </main>
 
-      <button onClick={() => setOpen(true)} className="fixed bottom-6 left-6 w-16 h-16 rounded-full bg-brand-blue text-white text-3xl shadow-lg">+</button>
+      <button
+        onClick={(e) => { const t = e.currentTarget as HTMLButtonElement; const r = t.getBoundingClientRect(); t.style.setProperty('--x', `${e.clientX - r.left}px`); t.style.setProperty('--y', `${e.clientY - r.top}px`); setOpen(true) }}
+        className="fixed right-6 w-16 h-16 rounded-full bg-brand-blue text-white text-3xl shadow-lg z-30 btn btn-ripple"
+        style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}
+      >
+        +
+      </button>
 
       {open && <AddModal onClose={() => setOpen(false)} />}
     </div>

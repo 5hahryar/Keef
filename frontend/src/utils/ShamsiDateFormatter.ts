@@ -8,9 +8,10 @@ const persianMonths = [
   export default function formatShamsiDate(isoDate: string): string {
     const date = new Date(isoDate);
     const jDate = jalaali.toJalaali(date);
-  
+
     const day = jDate.jd;
     const month = persianMonths[jDate.jm - 1]; // jm is 1-based
+    const year = jDate.jy;
   
     // Convert digits to Persian
     const persianDigits = (n: number) =>
@@ -18,5 +19,5 @@ const persianMonths = [
         String.fromCharCode(parseInt(d) + 0x06f0)
       );
   
-    return `${persianDigits(day)} ${month}`;
+    return `${persianDigits(day)} ${month} ${persianDigits(year)}`;
   }

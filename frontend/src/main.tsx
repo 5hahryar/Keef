@@ -8,7 +8,10 @@ import Dashboard from './pages/Dashboard'
 import Stats from './pages/Stats'
 import LoginPage from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoute'
+import AppLayout from './components/AppLayout'
 import { Toaster } from 'react-hot-toast'
+import InstallmentsPage from './pages/Installments'
+import InstallmentDetails from './pages/InstallmentDetails.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,8 +30,15 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-      { path: '/', element: <Dashboard /> },
-      { path: '/stats', element: <Stats /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { path: '/', element: <Dashboard /> },
+          { path: '/stats', element: <Stats /> },
+          { path: '/installments', element: <InstallmentsPage /> },
+          { path: '/installments/:id', element: <InstallmentDetails /> },
+        ],
+      },
     ],
   },
 ])

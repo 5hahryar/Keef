@@ -5,5 +5,5 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  envDir: path.resolve(__dirname, 'env')
+  envDir: path.resolve(__dirname, 'env'),
 })

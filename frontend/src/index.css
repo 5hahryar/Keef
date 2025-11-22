@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light ripple utility */
+.btn { @apply transition active:scale-95; }
+.btn-ripple { overflow: hidden; }
+.btn-ripple:not(.fixed) { position: relative; }
+.btn-ripple:after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(255,255,255,0.35), transparent 40%);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+.btn-ripple:active:after { opacity: 1; transition: opacity 0s; }
+
+/* Modal transitions */
+.modal-backdrop { @apply fixed inset-0 bg-black/40; animation: fadeIn 200ms ease forwards; }
+.modal-sheet { animation: slideUp 220ms cubic-bezier(.2,.8,.2,1) forwards; }
+.modal-exit .modal-backdrop { animation: fadeOut 160ms ease forwards; }
+.modal-exit .modal-sheet { animation: slideDown 180ms ease forwards; }
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
+@keyframes slideUp { from { transform: translateY(16px); opacity: .96 } to { transform: translateY(0); opacity: 1 } }
+@keyframes slideDown { from { transform: translateY(0); opacity: 1 } to { transform: translateY(16px); opacity: .96 } }
+
+/* Bottom nav mount */
+.nav-pop { animation: navPop 220ms ease-out forwards; }
+@keyframes navPop { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+/* Route fade */
+.route-fade { animation: routeFade 180ms ease; }
+@keyframes routeFade { from { opacity: .0 } to { opacity: 1 } }
+
 /* Vazirmatn Font Faces */
 @font-face {
   font-family: 'Vazirmatn';
