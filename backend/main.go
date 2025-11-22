@@ -76,6 +76,15 @@ func main() {
 		users.POST("/token", controllers.Login)
 		users.POST("/change-password", middlewares.AuthMiddleware(), controllers.ChangePassword)
 	}
+	loans := api.Group("/loans")
+	{
+		loans.Use(middlewares.AuthMiddleware())
+		loans.POST("", controllers.CreateLoan)
+		loans.GET("", controllers.GetLoans)
+		loans.GET("/:loanId", controllers.GetLoan)
+		loans.GET("/installments", controllers.GetInstallments)
+		loans.POST("/:loanId/installments/:installmentId/pay", controllers.PayInstallment)
+	}
 
 	port := os.Getenv("PORT")
 	router.Run(port)

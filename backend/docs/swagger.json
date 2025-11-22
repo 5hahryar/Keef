@@ -9,6 +9,290 @@
     "host": "localhost:8080",
     "basePath": "/api",
     "paths": {
+        "/loans": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get all loans for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loans"
+                ],
+                "summary": "Get all Loans",
+                "responses": {
+                    "200": {
+                        "description": "Loans",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Loan"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new loan for the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loans"
+                ],
+                "summary": "Create a new Loan",
+                "parameters": [
+                    {
+                        "description": "Loan data",
+                        "name": "transaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateLoanRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "id",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/loans/installments": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get installments by time",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loans"
+                ],
+                "summary": "Get installments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Start due date (RFC3339 format)",
+                        "name": "fromDueDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End due date (RFC3339 format)",
+                        "name": "toDueDate",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Installments",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Installment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/loans/{loanId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get details of a loan by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loans"
+                ],
+                "summary": "Get Loan information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Loan ID",
+                        "name": "loanId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Loan details",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoanDetail"
+                        }
+                    },
+                    "400": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/loans/{loanId}/installments/{installmentId}/pay": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Mark installment as paid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "loans"
+                ],
+                "summary": "Pay installment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Loan ID",
+                        "name": "loanId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Installment ID",
+                        "name": "installmentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/statistics/total-spent": {
             "get": {
                 "security": [
@@ -386,6 +670,105 @@
                 },
                 "repeatNewPassword": {
                     "type": "string"
+                }
+            }
+        },
+        "models.CreateLoanRequest": {
+            "type": "object",
+            "properties": {
+                "installmentAmount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberOfDueDay": {
+                    "type": "integer"
+                },
+                "numberOfInstallments": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Installment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "dueDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "installmentNumber": {
+                    "type": "integer"
+                },
+                "loan": {
+                    "$ref": "#/definitions/models.Loan"
+                },
+                "status": {
+                    "$ref": "#/definitions/models.InstallmentStatus"
+                }
+            }
+        },
+        "models.InstallmentStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "paid",
+                "overdue"
+            ],
+            "x-enum-varnames": [
+                "InstallmentPending",
+                "InstallmentPaid",
+                "InstallmentOverdue"
+            ]
+        },
+        "models.Loan": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "installmentAmount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberOfDueDay": {
+                    "type": "integer"
+                },
+                "numberOfInstallments": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.LoanDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "installmentAmount": {
+                    "type": "integer"
+                },
+                "installments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Installment"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numberOfDueDay": {
+                    "type": "integer"
+                },
+                "numberOfInstallments": {
+                    "type": "integer"
                 }
             }
         },

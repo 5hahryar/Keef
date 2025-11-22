@@ -13,6 +13,72 @@ definitions:
     - password
     - repeatNewPassword
     type: object
+  models.CreateLoanRequest:
+    properties:
+      installmentAmount:
+        type: integer
+      name:
+        type: string
+      numberOfDueDay:
+        type: integer
+      numberOfInstallments:
+        type: integer
+    type: object
+  models.Installment:
+    properties:
+      amount:
+        type: integer
+      dueDate:
+        type: string
+      id:
+        type: string
+      installmentNumber:
+        type: integer
+      loan:
+        $ref: '#/definitions/models.Loan'
+      status:
+        $ref: '#/definitions/models.InstallmentStatus'
+    type: object
+  models.InstallmentStatus:
+    enum:
+    - pending
+    - paid
+    - overdue
+    type: string
+    x-enum-varnames:
+    - InstallmentPending
+    - InstallmentPaid
+    - InstallmentOverdue
+  models.Loan:
+    properties:
+      id:
+        type: string
+      installmentAmount:
+        type: integer
+      name:
+        type: string
+      numberOfDueDay:
+        type: integer
+      numberOfInstallments:
+        type: integer
+    type: object
+  models.LoanDetail:
+    properties:
+      id:
+        type: string
+      installmentAmount:
+        type: integer
+      installments:
+        items:
+          $ref: '#/definitions/models.Installment'
+        type: array
+      name:
+        type: string
+      numberOfDueDay:
+        type: integer
+      numberOfInstallments:
+        type: integer
+    type: object
   models.LoginRequest:
     properties:
       password:
@@ -49,6 +115,187 @@ info:
   title: Keef API
   version: "1.0"
 paths:
+  /loans:
+    get:
+      consumes:
+      - application/json
+      description: Get all loans for a user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Loans
+          schema:
+            items:
+              $ref: '#/definitions/models.Loan'
+            type: array
+        "400":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get all Loans
+      tags:
+      - loans
+    post:
+      consumes:
+      - application/json
+      description: Create a new loan for the authenticated user
+      parameters:
+      - description: Loan data
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateLoanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: id
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new Loan
+      tags:
+      - loans
+  /loans/{loanId}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a loan by ID
+      parameters:
+      - description: Loan ID
+        in: path
+        name: loanId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Loan details
+          schema:
+            $ref: '#/definitions/models.LoanDetail'
+        "400":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get Loan information
+      tags:
+      - loans
+  /loans/{loanId}/installments/{installmentId}/pay:
+    post:
+      consumes:
+      - application/json
+      description: Mark installment as paid
+      parameters:
+      - description: Loan ID
+        in: path
+        name: loanId
+        required: true
+        type: string
+      - description: Installment ID
+        in: path
+        name: installmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Pay installment
+      tags:
+      - loans
+  /loans/installments:
+    get:
+      consumes:
+      - application/json
+      description: Get installments by time
+      parameters:
+      - description: Start due date (RFC3339 format)
+        in: query
+        name: fromDueDate
+        type: string
+      - description: End due date (RFC3339 format)
+        in: query
+        name: toDueDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Installments
+          schema:
+            items:
+              $ref: '#/definitions/models.Installment'
+            type: array
+        "400":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get installments
+      tags:
+      - loans
   /statistics/total-spent:
     get:
       consumes:
