@@ -157,7 +157,7 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
                 </option>
               ))}
             </select>
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <div className="absolute left-3 top-1/2 transform -translate-y-5 pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -229,7 +229,6 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
 
           <div className="flex gap-3 pt-4">
             <button type="submit" className="flex-1 rounded-pill bg-brand-blue text-white py-3 text-lg btn btn-ripple">ایجاد</button>
-            <button type="button" onClick={onClose} className="flex-1 rounded-pill bg-gray-100 text-gray-700 py-3 text-lg btn">انصراف</button>
           </div>
         </form>
       </div>

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useCreateTransaction } from "../hooks/useTransactions"
 import { transactionCategories } from "../utils/TransactionCategories"
 import { banks } from "../utils/Banks"
+import { formatNumber } from "../utils/NumberFormatter"
 
 export default function AddModal({ onClose }: { onClose: () => void }) {
     const [formData, setFormData] = useState({
@@ -44,7 +45,17 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
     return (
       <div className="modal-backdrop flex items-end z-50">
         <div className="w-full rounded-t-3xl bg-white p-4 space-y-3 modal-sheet">
-          <div className="text-lg font-semibold text-right">تراکنش جدید</div>
+        <div className="flex items-center justify-between mb-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-500 text-2xl w-8 h-8 flex items-center justify-center"
+          >
+            ×
+          </button>
+          <div className="text-center text-lg font-extrabold flex-1">تراکنش جدید</div>
+          <div className="w-8" />
+        </div>
           
           <form onSubmit={handleSubmit} className="space-y-3">
             <input 
@@ -56,29 +67,23 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
             />
             
             <input 
-              placeholder="توضیحات" 
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="w-full rounded-xl border border-gray-200 px-3 py-3 text-right" 
-            />
-            
-            <input 
               placeholder="مبلغ" 
-              type="number"
-              value={formData.amount}
-              onChange={(e) => setFormData({...formData, amount: e.target.value})}
+              type="text"
+              inputMode="numeric"
+              value={formatNumber(formData.amount)}
+              onChange={(e) => setFormData({...formData, amount: e.target.value.replace(/,/g, "")})}
               className="w-full rounded-xl border border-gray-200 px-3 py-3 text-right" 
               required
             />
             
             <div className="text-right text-gray-600 mt-2">دسته‌بندی</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="-mx-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4">
               {Object.entries(transactionCategories).map(([categoryKey, categoryLabel]) => (
                 <button 
                   key={categoryKey} 
                   type="button"
                   onClick={() => setFormData({...formData, category: categoryKey})}
-                  className={`rounded-pill px-4 py-2 text-sm ${
+                  className={`shrink-0 text-gray-800 rounded-pill px-4 py-2 text-gray-800 text-sm ${
                     formData.category === categoryKey ? 'bg-brand-blue text-white' : 'border'
                   }`}
                 >
@@ -88,7 +93,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
             </div>
             
             <div className="text-right text-gray-600 mt-2">بانک</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="-mx-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4">
               {Object.entries(banks).map(([bankKey, bankLabel]) => (
                 <button 
                   key={bankKey} 
@@ -111,15 +116,6 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
               className="w-full rounded-pill bg-brand-blue text-white py-3 text-lg disabled:opacity-50 btn btn-ripple"
             >
               {createTransactionMutation.isPending ? 'در حال اضافه کردن...' : 'اضافه کن'}
-            </button>
-
-            <button 
-              type="button" 
-              disabled={createTransactionMutation.isPending}
-              onClick={onClose}
-              className="w-full text-red-500 py-3 text-lg disabled:opacity-50 btn"
-            >
-              {'انصراف'}
             </button>
             </div>
           </form>

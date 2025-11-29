@@ -24,8 +24,6 @@ export default function Dashboard() {
     <>
       <div className="min-h-screen bg-gray-50">
         <header className="flex items-center justify-between p-4">
-          <h1 className="text-xl font-semibold">داشبورد</h1>
-          {/* <Link className="text-brand-blue" to="/stats">آمار →</Link> */}
         </header>
 
         <main className="px-4">
@@ -39,11 +37,11 @@ export default function Dashboard() {
             <div className="text-gray-500 mt-1">تومن</div>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="-mx-4 flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-4">
           <button 
               onClick={() => setSelectedCategory(undefined)}
               className={`shrink-0 rounded-pill px-5 py-2 text-gray-800 ${
-                !selectedCategory ? 'bg-brand-blue text-white' : 'bg-brand-pink/20'
+                !selectedCategory ? 'bg-brand-blue text-white' : 'bg-brand-blue/10'
               }`}
             >
               همه
@@ -53,7 +51,7 @@ export default function Dashboard() {
                 key={categoryKey} 
                 onClick={() => setSelectedCategory(categoryKey)}
                 className={`shrink-0 rounded-pill px-5 py-2 text-gray-800 ${
-                  selectedCategory === categoryKey ? 'bg-brand-blue text-white' : 'bg-brand-pink/20'
+                  selectedCategory === categoryKey ? 'bg-brand-blue text-white' : 'bg-brand-blue/10'
                 }`}
               >
                 {categoryLabel}
@@ -77,23 +75,23 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <ul className="mt-4 divide-y divide-gray-200 bg-white rounded-2xl shadow-card">
+            <div className="space-y-2 mt-4 rounded-2xl">
               {transactions.map(t => (
-                <li key={t.id} className="flex items-center justify-between px-4 py-4">
+                <div key={t.id} className="flex items-center justify-between px-4 py-4 rounded-2xl bg-white">
                   <div className="text-gray-700">{t.title}
                     <div className="text-xs text-gray-400 mt-1">{formatShamsiDate(t.date)} | {Object.entries(banks).find(b => b[0] === t.bank)?.[1]}</div>
                   </div>
                   <div className="text-red-600 font-semibold">{new Intl.NumberFormat('fa-IR').format(Math.abs(t.amount))}</div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </main>
       </div>
 
       <button
       onClick={(e) => { const t = e.currentTarget as HTMLButtonElement; const r = t.getBoundingClientRect(); t.style.setProperty('--x', `${e.clientX - r.left}px`); t.style.setProperty('--y', `${e.clientY - r.top}px`); setOpen(true) }}
-      className="fixed right-6 w-16 h-16 rounded-full bg-brand-blue text-white text-3xl shadow-lg btn btn-ripple"
+      className="fixed right-6 w-16 h-16 rounded-2xl bg-brand-blue text-white text-3xl shadow-lg btn btn-ripple"
       style={{ 
         position: 'fixed',
         right: '1.5rem',

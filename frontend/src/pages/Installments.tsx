@@ -75,10 +75,6 @@ export default function InstallmentsPage() {
     <>
       <div className="min-h-screen bg-gray-50 pb-28">
         <div className="max-w-2xl mx-auto px-4 pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-extrabold">اقساط</h1>
-            <div className="w-6" />
-          </div>
 
           {/* Tab Navigation */}
           <div className="flex bg-gray-100 rounded-2xl p-1 mb-6">
@@ -203,9 +199,10 @@ export default function InstallmentsPage() {
       </div>
 
       {/* Floating Action Button - fixed at bottom right, outside scrollable container */}
-      <button
+      {activeTab === 'loans' && (
+        <button
         onClick={(e) => { const t = e.currentTarget as HTMLButtonElement; const r = t.getBoundingClientRect(); t.style.setProperty('--x', `${e.clientX - r.left}px`); t.style.setProperty('--y', `${e.clientY - r.top}px`); setOpen(true) }}
-        className="fixed right-6 h-14 w-14 rounded-2xl bg-violet-600 text-white shadow-lg text-3xl flex items-center justify-center btn btn-ripple"
+        className="fixed right-6 h-16 w-16 rounded-2xl bg-brand-blue text-white shadow-lg text-3xl flex items-center justify-center btn btn-ripple"
         style={{ 
           position: 'fixed',
           right: '1.5rem',
@@ -215,6 +212,7 @@ export default function InstallmentsPage() {
       >
         +
       </button>
+      )}
 
       {open && (
         <AddInstallmentModal
