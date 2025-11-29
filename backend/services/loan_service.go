@@ -161,6 +161,7 @@ func generateInstallmentDueDates(dueDayNumber int, numInstallments int, firstPay
 	if firstPaymentDate != nil {
 		now = ptime.New(*firstPaymentDate)
 		month = now.Month()
+		year = now.Year()
 	}
 
 	for i := 0; i < numInstallments; i++ {
