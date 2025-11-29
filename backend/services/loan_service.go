@@ -27,7 +27,7 @@ func CreateLoan(username string, loan *models.CreateLoanRequest) (id *uuid.UUID,
 	}
 
 	var installments []database.InstallmentEntity
-	now := time.Now().UTC()
+	// now := time.Now().UTC()
 
 	dueDates := generateInstallmentDueDates(int(loan.DueDayNumber), int(loan.NumberOfInstallments), firstPaymentDate)
 
@@ -40,25 +40,31 @@ func CreateLoan(username string, loan *models.CreateLoanRequest) (id *uuid.UUID,
 			UserID:            userEntity.ID,
 		}
 
+		if time.Now().UTC().After(dueDates[i].UTC()) {
+			installment.PaidDate = &dueDates[i]
+		}
+
+
 		// If first payment date is provided, mark installments as paid
 		// that have due dates on or before the first payment date
 		// and before or on today (to prevent marking future installments)
-		if firstPaymentDate != nil {
-			dueDateUTC := installment.DueDate.UTC()
-			firstPaymentUTC := firstPaymentDate.UTC()
+		// if firstPaymentDate != nil {
+		// 	dueDateUTC := installment.DueDate.UTC()
+		// 	firstPaymentUTC := firstPaymentDate.UTC()
 
-			// Installment is paid if:
-			// 1. Its due date is on or before the first payment date (meaning it was already paid)
-			// 2. Its due date is before or on today (can't mark future installments as paid)
-			dueDateBeforeFirstPayment := !dueDateUTC.After(firstPaymentUTC)
-			dueDateNotInFuture := !dueDateUTC.After(now)
+		// 	// Installment is paid if:
+		// 	// 1. Its due date is on or before the first payment date (meaning it was already paid)
+		// 	// 2. Its due date is before or on today (can't mark future installments as paid)
+		// 	dueDateBeforeFirstPayment := !dueDateUTC.After(firstPaymentUTC)
+		// 	dueDateNotInFuture := !dueDateUTC.After(now)
 
-			if dueDateBeforeFirstPayment && dueDateNotInFuture {
-				// Use the first payment date as the paid date for all installments up to that point
-				paidDate := firstPaymentUTC
-				installment.PaidDate = &paidDate
-			}
-		}
+		// 	if dueDateBeforeFirstPayment && dueDateNotInFuture {
+		// 		// Use the first payment date as the paid date for all installments up to that point
+		// 		paidDate := firstPaymentUTC
+		// 		installment.PaidDate = &paidDate
+		// 	}
+		// }
+		fmt.Println("INSTALLMENT:", installment)
 
 		installments = append(installments, installment)
 	}
@@ -75,6 +81,8 @@ func CreateLoan(username string, loan *models.CreateLoanRequest) (id *uuid.UUID,
 	result := database.DB.Create(&entity)
 
 	if result.Error != nil {
+		fmt.Println(result.Error.Error())
+		fmt.Println(entity)
 		return &entity.ID, result.Error
 	}
 
@@ -149,6 +157,11 @@ func generateInstallmentDueDates(dueDayNumber int, numInstallments int, firstPay
 	now := ptime.Now()
 	year := now.Year()
 	month := now.Month() + 1 // start from next month
+
+	if firstPaymentDate != nil {
+		now = ptime.New(*firstPaymentDate)
+		month = now.Month()
+	}
 
 	for i := 0; i < numInstallments; i++ {
 		// handle month overflow

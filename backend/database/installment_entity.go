@@ -12,7 +12,7 @@ type InstallmentEntity struct {
 	InstallmentNumber int16
 	Amount int64
 	DueDate time.Time
-	PaidDate *time.Time `gorm:"default:null"`
+	PaidDate *time.Time
 
 	LoanID uuid.UUID
 	Loan LoanEntity
