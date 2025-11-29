@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { loanService, type Loan, type LoanDetail, type Installment } from '../services/loanService'
+import getShamsiMonthRange from '../utils/ShamsiDateExt'
 
 export function useLoans() {
   const [loans, setLoans] = useState<Loan[]>([])
@@ -75,14 +76,11 @@ export function useCurrentMonthInstallments() {
       setLoading(true)
       setError(null)
       
-      // Get current month date range
-      const now = new Date()
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+      const currentShamsiMonthDateRange = getShamsiMonthRange()
       
       const data = await loanService.getInstallments(
-        startOfMonth.toISOString(),
-        endOfMonth.toISOString()
+        currentShamsiMonthDateRange.startDate.toISOString(),
+        currentShamsiMonthDateRange.endDate.toISOString()
       )
       setInstallments(data)
     } catch (err) {

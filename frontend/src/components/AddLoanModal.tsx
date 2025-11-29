@@ -102,11 +102,6 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
     }
   }
 
-  const daysInSelectedMonth = getDaysInMonth(
-    parseInt(firstPaymentDate.year || '1400'),
-    parseInt(firstPaymentDate.month || '1')
-  )
-
   return (
     <div className="modal-backdrop flex items-end z-50">
       <div className="w-full rounded-t-3xl bg-white p-5 space-y-4 max-h-[90vh] overflow-auto modal-sheet">
@@ -118,14 +113,14 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
           >
             ×
           </button>
-          <div className="text-center text-lg font-extrabold flex-1">قسط جدید - نسخه ۲</div>
+          <div className="text-center text-lg font-extrabold flex-1">وام جدید</div>
           <div className="w-8" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             className="w-full rounded-xl border border-gray-200 px-3 py-3 text-right"
-            placeholder="عنوان (مثلاً: قسط خودرو)"
+            placeholder="عنوان (مثلاً: خودرو)"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -178,13 +173,13 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
             <button
               type="button"
               onClick={() => handleTogglePartiallyPaid(!isPartiallyPaid)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
                 isPartiallyPaid ? 'bg-blue-600' : 'bg-gray-300'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  isPartiallyPaid ? 'translate-x-6' : 'translate-x-1'
+                className={`mr-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isPartiallyPaid && 'mr-7'
                 }`}
               />
             </button>
@@ -196,19 +191,19 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
                 اگر این وام را قبلاً شروع کرده اید تاریخ اولین پرداخت را مشخص کنید
               </div>
               <div className="text-sm text-gray-700 mb-1 text-right">تاریخ اولین پرداخت را انتخاب کنید</div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <input
                   type="number"
                   placeholder="سال"
                   min="1300"
                   max="1500"
-                  className="rounded-xl border border-gray-200 px-3 py-3 text-right"
+                  className="rounded-xl border border-gray-200 px-3 py-3 text-center"
                   value={firstPaymentDate.year}
                   onChange={(e) => setFirstPaymentDate({ ...firstPaymentDate, year: e.target.value })}
                   required={isPartiallyPaid}
                 />
                 <select
-                  className="rounded-xl border border-gray-200 px-3 py-3 text-right appearance-none bg-white"
+                  className="rounded-xl border border-gray-200 px-3 py-3 text-center appearance-none bg-white"
                   value={firstPaymentDate.month}
                   onChange={(e) => {
                     const month = e.target.value
@@ -225,19 +220,6 @@ export default function AddInstallmentModal({ onClose, onSuccess }: { onClose: (
                   {persianMonths.map((month, idx) => (
                     <option key={idx + 1} value={(idx + 1).toString()}>
                       {month}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="rounded-xl border border-gray-200 px-3 py-3 text-right appearance-none bg-white"
-                  value={firstPaymentDate.day}
-                  onChange={(e) => setFirstPaymentDate({ ...firstPaymentDate, day: e.target.value })}
-                  required={isPartiallyPaid}
-                >
-                  <option value="">روز</option>
-                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((day) => (
-                    <option key={day} value={day.toString()}>
-                      {day}
                     </option>
                   ))}
                 </select>

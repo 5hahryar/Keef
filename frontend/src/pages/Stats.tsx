@@ -13,6 +13,7 @@ export default function Stats() {
     value: item.total,
     color: colors[index % colors.length]
   }))
+  return (<></>)
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="flex items-center justify-between p-4">

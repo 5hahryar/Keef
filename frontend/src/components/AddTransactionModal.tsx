@@ -42,7 +42,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
     }
   
     return (
-      <div className="modal-backdrop flex items-end">
+      <div className="modal-backdrop flex items-end z-50">
         <div className="w-full rounded-t-3xl bg-white p-4 space-y-3 modal-sheet">
           <div className="text-lg font-semibold text-right">تراکنش جدید</div>
           
@@ -103,6 +103,8 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
               ))}
             </div>
             
+            <div className="flex gap-3 pt-4">
+          
             <button 
               type="submit" 
               disabled={createTransactionMutation.isPending}
@@ -119,6 +121,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
             >
               {'انصراف'}
             </button>
+            </div>
           </form>
         </div>
       </div>
