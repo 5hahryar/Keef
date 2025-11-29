@@ -1,4 +1,4 @@
-const CACHE = 'keef-cache-v1'
+const CACHE = 'keef-cache-v2'
 const ASSETS = [
   '/',
   '/index.html',
