@@ -1,4 +1,4 @@
-const CACHE = 'keef-cache-v2'
+const CACHE = 'keef-cache-v3'
 const ASSETS = [
   '/',
   '/index.html',
@@ -20,10 +20,28 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request
+
   if (req.method !== 'GET') return
+
+  const url = new URL(req.url)
+
+  if (url.pathname.startsWith('/api')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone()
+          caches.open(CACHE).then((cache) => cache.put(req, copy))
+          return res
+        })
+        .catch(() => caches.match(req)) // offline fallback
+    )
+    return
+  }
+
   event.respondWith(
     caches.match(req).then((cached) =>
-      cached || fetch(req).then((res) => {
+      cached ||
+      fetch(req).then((res) => {
         const copy = res.clone()
         caches.open(CACHE).then((cache) => cache.put(req, copy))
         return res
@@ -31,5 +49,6 @@ self.addEventListener('fetch', (event) => {
     )
   )
 })
+
 
 
