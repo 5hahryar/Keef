@@ -60,9 +60,9 @@ export interface ChangePasswordRequest {
 }
 
 export interface CategoryStats {
-  category: string
+  name: string
   total: number
-  percentage: number
+  transaction_count: number
 }
 
 // Loan and Installment types

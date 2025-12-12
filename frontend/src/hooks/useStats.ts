@@ -27,3 +27,16 @@ export const useSpendingByCategory = (params?: {
     retry: false, // Don't retry on auth errors
   })
 }
+
+export const useTransactionCount = (params?: {
+  startDate?: string
+  endDate?: string
+}) => {
+  return useQuery({
+    queryKey: ['stats', 'transaction-count', params],
+    queryFn: () => statsService.getTransactionCount(params),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!localStorage.getItem('access_token'), // Only fetch if authenticated
+    retry: false, // Don't retry on auth errors
+  })
+}
