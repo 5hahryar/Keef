@@ -70,6 +70,7 @@ func main() {
 		statistics.Use(middlewares.AuthMiddleware())
 		statistics.GET("/total-spent", controllers.GetStatsTotalSpending)
 		statistics.GET("/total-spent-category", controllers.GetStatsTotalSpendingByCategory)
+		statistics.GET("/transaction-count", controllers.GetStatsTransactionCount)
 	}
 	users := api.Group("/users")
 	{
