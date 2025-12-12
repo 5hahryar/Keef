@@ -86,6 +86,18 @@ func main() {
 		loans.GET("/installments", controllers.GetInstallments)
 		loans.POST("/:loanId/installments/:installmentId/pay", controllers.PayInstallment)
 	}
+	assets := api.Group("/assets")
+	{
+		assets.Use(middlewares.AuthMiddleware())
+		assets.POST("", controllers.CreateAsset)
+		assets.GET("", controllers.GetAssets)
+		assets.GET("/:id", controllers.GetAsset)
+		assets.PUT("/:id", controllers.UpdateAsset)
+		assets.DELETE("/:id", controllers.DeleteAsset)
+		assets.POST("/transactions", controllers.CreateAssetTransaction)
+		assets.GET("/transactions", controllers.GetAssetTransactions)
+		assets.DELETE("/transactions/:id", controllers.DeleteAssetTransaction)
+	}
 
 	port := os.Getenv("PORT")
 	router.Run(port)
