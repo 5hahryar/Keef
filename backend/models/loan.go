@@ -15,11 +15,12 @@ type CreateLoanRequest struct {
 }
 
 type Loan struct {
-	Id                   uuid.UUID `json:"id"`
-	Name                 string    `json:"name"`
-	NumberOfInstallments int16     `json:"numberOfInstallments"`
-	InstallmentAmount    int64     `json:"installmentAmount"`
-	DueDayNumber         int8      `json:"numberOfDueDay"`
+	Id                   uuid.UUID  `json:"id"`
+	Name                 string     `json:"name"`
+	NumberOfInstallments int16      `json:"numberOfInstallments"`
+	InstallmentAmount    int64      `json:"installmentAmount"`
+	DueDayNumber         int8       `json:"numberOfDueDay"`
+	IsPaid         		 bool		`json:"isPaid"`
 }
 
 type LoanDetail struct {
@@ -28,6 +29,7 @@ type LoanDetail struct {
 	NumberOfInstallments int           `json:"numberOfInstallments"`
 	InstallmentAmount    int64         `json:"installmentAmount"`
 	NumberOfDueDay       int8          `json:"numberOfDueDay"`
+	IsPaid         		 bool		   `json:"isPaid"`
 	Installments         []Installment `json:"installments"`
 }
 
@@ -46,4 +48,11 @@ const (
 	InstallmentPending InstallmentStatus = "pending"
 	InstallmentPaid    InstallmentStatus = "paid"
 	InstallmentOverdue InstallmentStatus = "overdue"
+)
+
+type LoanStatus string
+
+const (
+	LoanActive  LoanStatus = "active"
+	LoanPaid    LoanStatus = "paid"
 )

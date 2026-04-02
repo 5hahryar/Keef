@@ -13,6 +13,7 @@ type LoanEntity struct {
 	InstallmentAmount    int64
 	NumberOfInstallments int16
 	DueDayNumber         int8
+	IsPaid				 bool
 
 	Installments []InstallmentEntity `gorm:"foreignKey:LoanID"`
 

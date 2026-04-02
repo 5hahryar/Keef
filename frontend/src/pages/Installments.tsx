@@ -100,10 +100,10 @@ export default function InstallmentsPage() {
 
           {/* Tab Content */}
           {activeTab === 'loans' && (
-            <div>
+            <div className="space-y-8">
               <div className="text-lg font-bold mb-3">وام‌های من</div>
               <div className="space-y-4">
-                {loans.map((loan) => (
+                {loans.filter((loan) => !loan.isPaid).map((loan) => (
                   <div key={loan.id} className="bg-white rounded-3xl p-5 shadow-card">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900">وام {loan.name}</h3>
@@ -134,6 +134,27 @@ export default function InstallmentsPage() {
                       </button>
                     </div>
 
+                  </div>
+                ))}
+                {loans.length === 0 && (
+                  <div className="text-center text-gray-500 py-10">وامی اضافه نشده است</div>
+                )}
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-gray-100" />
+
+              {/* Paid Loans */}
+              <div className="text-lg font-bold mb-3">وام‌های پرداخت شده</div>
+              <div className="space-y-4">
+                {loans.filter((loan) => loan.isPaid).map((loan) => (
+                  <div key={loan.id} className="bg-white rounded-3xl p-5 shadow-card hover:bg-gry-100" 
+                    onClick={() => navigate(`/installments/${loan.id}`)}>
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-gray-600">وام {loan.name}</h3>
+                      <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm ">
+                        پرداخت شده
+                      </span>
+                    </div>
                   </div>
                 ))}
                 {loans.length === 0 && (

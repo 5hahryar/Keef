@@ -91,12 +91,12 @@ export default function InstallmentDetails() {
         {/* <div className="w-6" /> */}
       </div>
 
-      <div className="rounded-3xl p-5 bg-gradient-to-br from-blue-600 to-blue-500 text-white shadow-card">
+      <div className={`rounded-3xl p-5 bg-gradient-to-br text-white shadow-card ${loanDetails.isPaid ? "from-green-600 to-green-500" : "from-blue-600 to-blue-500"}`}>
         <div className="flex items-center justify-between">
           <div>
             <div className="text-2xl font-extrabold">وام {loanDetails.name}</div>
           </div>
-          <span className="px-3 py-1 rounded-full bg-white/15">فعال</span>
+          <span className="px-3 py-1 rounded-full bg-white/15">{loanDetails.isPaid ? "پرداخت شده" : "فعال"}</span>
         </div>
 
         <div className="mt-5">

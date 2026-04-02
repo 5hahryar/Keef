@@ -7,6 +7,7 @@ export interface Loan {
   numberOfInstallments: number
   installmentAmount: number
   numberOfDueDay: number
+  isPaid: boolean
 }
 
 export interface LoanDetail {
@@ -15,6 +16,7 @@ export interface LoanDetail {
   numberOfInstallments: number
   installmentAmount: number
   numberOfDueDay: number
+  isPaid: boolean
   installments: Installment[]
 }
 

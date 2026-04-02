@@ -104,6 +104,7 @@ func GetAllLoans(username string) (loan []models.Loan, err error) {
 			NumberOfInstallments: entity.NumberOfInstallments,
 			InstallmentAmount:    entity.InstallmentAmount,
 			DueDayNumber:         entity.DueDayNumber,
+			IsPaid: 			  entity.IsPaid,
 		}
 	}
 
@@ -122,29 +123,41 @@ func GetLoanInformation(username string, loanId uuid.UUID) (loan *models.LoanDet
 		return nil, err
 	}
 
+	isLoanPaid := true
 	installments := make([]models.Installment, len(entity.Installments))
-	for i, entity := range entity.Installments {
+	for i, installmentEntity := range entity.Installments {
+		if isLoanPaid && installmentEntity.PaidDate == nil {
+			isLoanPaid = false
+		}
+
 		status := models.InstallmentPending
-		if entity.PaidDate != nil {
+		if installmentEntity.PaidDate != nil {
 			status = models.InstallmentPaid
-		} else if time.Now().UTC().After(entity.DueDate.UTC()) {
+		} else if time.Now().UTC().After(installmentEntity.DueDate.UTC()) {
 			status = models.InstallmentOverdue
 		}
 
 		installments[i] = models.Installment{
-			Id:                entity.ID,
-			Amount:            entity.Amount,
-			DueDate:           entity.DueDate,
-			InstallmentNumber: int(entity.InstallmentNumber),
+			Id:                installmentEntity.ID,
+			Amount:            installmentEntity.Amount,
+			DueDate:           installmentEntity.DueDate,
+			InstallmentNumber: int(installmentEntity.InstallmentNumber),
 			Status:            status,
 		}
 	}
+
+	if entity.IsPaid != isLoanPaid {
+		entity.IsPaid = isLoanPaid
+		database.DB.Model(&entity).Update("is_paid", isLoanPaid)
+	}
+
 	result := models.LoanDetail{
 		Id:                   entity.ID,
 		Name:                 entity.Name,
 		NumberOfInstallments: int(entity.NumberOfInstallments),
 		InstallmentAmount:    entity.InstallmentAmount,
 		NumberOfDueDay:       entity.DueDayNumber,
+		IsPaid:				  entity.IsPaid,
 		Installments:         installments,
 	}
 
