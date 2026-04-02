@@ -16,6 +16,10 @@ func CreateTransaction(username string, transaction *models.Transaction) (id *ui
 	database.DB.Where("name = ?", transaction.Category).First(&category)
 	database.DB.Where("name = ?", transaction.Bank).First(&bank)
 	database.DB.Where("name = ?", transaction.Type).First(&exType)
+	date, err := time.Parse(time.RFC3339, transaction.Date)
+	if err != nil {
+		date = time.Now()
+	}
 
 	entity := database.TransactionEntity{
 		Title:       transaction.Title,
@@ -25,6 +29,7 @@ func CreateTransaction(username string, transaction *models.Transaction) (id *ui
 		Category:    category,
 		Type:        exType,
 		UserID:      userEntity.ID,
+		Date:	 	 date,
 	}
 
 	result := database.DB.Create(&entity)
@@ -65,7 +70,7 @@ func GetTransactions(username string, page int, category string) []models.Transa
 			Bank:     entity.Bank.Name,
 			Category: entity.Category.Name,
 			Type:     entity.Type.Name,
-			Date:     entity.CreatedAt.UTC().Format(time.RFC3339),
+			Date:     entity.Date.UTC().Format(time.RFC3339),
 		}
 	}
 

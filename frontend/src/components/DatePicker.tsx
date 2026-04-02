@@ -6,9 +6,10 @@ interface DatePickerProps {
   value: string; // ISO date string
   onChange: (isoDate: string) => void;
   placeholder?: string;
+  useShortDisplayFormat?: boolean;
 }
 
-export default function DatePicker({ value, onChange, placeholder = 'تاریخ را انتخاب کنید' }: DatePickerProps) {
+export default function DatePicker({ value, onChange, placeholder = 'تاریخ را انتخاب کنید', useShortDisplayFormat = false }: DatePickerProps) {
   // Parse initial date or use current date
   const initialDate = value ? new Date(value) : new Date();
   const initialJDate = jalaali.toJalaali(initialDate);
@@ -42,7 +43,7 @@ export default function DatePicker({ value, onChange, placeholder = 'تاریخ 
       const gregorian = jalaali.toGregorian(year, month, day);
       const date = new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd);
       date.setHours(0, 0, 0, 0);
-      onChange(date.toISOString().split('T')[0]);
+      onChange(date.toISOString());
       setIsOpen(false);
     } catch (error) {
       console.error('Error converting date:', error);
@@ -54,6 +55,8 @@ export default function DatePicker({ value, onChange, placeholder = 'تاریخ 
     try {
       const date = new Date(value);
       const jDate = jalaali.toJalaali(date);
+      if(date.getUTCDate() == new Date().getUTCDate()) return 'امروز'
+      if(useShortDisplayFormat) return `${toPersianDigits(jDate.jy)}/${toPersianDigits(jDate.jm)}/${toPersianDigits(jDate.jd)}`;
       return `${toPersianDigits(jDate.jd)} ${persianMonths[jDate.jm - 1]} ${toPersianDigits(jDate.jy)}`;
     } catch {
       return placeholder;

@@ -1,7 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLoanDetails } from '../hooks/useLoans'
 import formatShamsiDate from '../utils/ShamsiDateFormatter'
+import LongPressButton from '../components/LongPressButton'
+import { loanService } from '../services/loanService'
+import toast from 'react-hot-toast'
 
 function toPersianDigits(n: number): string {
   return n
@@ -16,7 +19,23 @@ function formatCurrency(amount: number): string {
 export default function InstallmentDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { loanDetails, loading, error } = useLoanDetails(id || '')
+  const { loanDetails, loading, error, refetch } = useLoanDetails(id || '')
+  const [payingInstallmentId, setPayingInstallmentId] = useState<string | null>(null)
+
+  const handlePayInstallment = async (installmentId: string) => {
+    try {
+      setPayingInstallmentId(installmentId)
+      await loanService.payInstallment(id ?? '', installmentId)
+      // Refresh installments after successful payment
+      await refetch()
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'خطا در ثبت پرداخت'
+      toast.error(errorMessage)
+      console.error('Error paying installment:', error)
+    } finally {
+      setPayingInstallmentId(null)
+    }
+  }
 
   // Use data directly from backend - no client-side calculations
   const data = useMemo(() => {
@@ -36,7 +55,7 @@ export default function InstallmentDetails() {
       index: inst.installmentNumber,
       amount: inst.amount,
       date: inst.dueDate,
-      isPaid: inst.status === 'paid',
+      status: inst.status,
       installmentId: inst.id
     }))
     
@@ -118,27 +137,43 @@ export default function InstallmentDetails() {
       <div className="mt-6 text-lg font-bold mb-2">لیست اقساط</div>
       <div className="space-y-3">
         {data.list.map((row) => (
-          <div key={row.index} className={`rounded-2xl p-4 border ${row.isPaid ? 'bg-emerald-50 border-emerald-100' : 'bg-white border-gray-100'} flex items-center justify-between`}>
+          <div key={row.index} className={`rounded-2xl p-4 border ${row.status == "paid" ? 'bg-emerald-50 border-emerald-100' : row.status == "overdue" ? 'border-red-100' : 'bg-white border-gray-100'} flex items-center justify-between`}>
             <div>
-              <div className={`text-lg font-semibold ${row.isPaid ? 'line-through text-gray-400' : 'text-gray-800'}`}>{formatCurrency(row.amount)} تومان</div>
+              <div className={`text-lg font-semibold ${row.status == "paid" ? 'line-through text-gray-400' : 'text-gray-800'}`}>{formatCurrency(row.amount)} تومان</div>
               <div className="text-sm text-gray-500">قسط {toPersianDigits(row.index)}</div>
             </div>
 
             <span className="h-7 text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap">
-              سررسید {formatShamsiDate(row.date)}
+              {row.status != "paid" && 'سررسید'} {formatShamsiDate(row.date)}
             </span>
 
             <div className="flex items-center gap-3 text-sm text-gray-600">
-
-              {row.isPaid ? (
+              {row.status == "paid" && (
                 <span className="h-7 text-xs px-3 py-1.5 rounded-full bg-green-200 text-green-700 whitespace-nowrap">
                   ✓ پرداخت‌ شده
                 </span>
-              ) : (
+              ) }
+              {row.status == "pending" && (
                 <span className="h-7 text-xs px-3 py-1.5 rounded-full bg-yellow-100 text-yellow-600 whitespace-nowrap">
                   منتظر پرداخت
                 </span>
               )}
+              {row.status == "overdue" && (
+                <span className="h-7 text-xs px-3 py-1.5 rounded-full bg-red-100 text-red-600 whitespace-nowrap">
+                  تاخیر
+                </span>
+              )}
+
+              {row.status !== 'paid' && (
+                <LongPressButton
+                  onLongPress={() => handlePayInstallment(row.installmentId)}
+                  disabled={payingInstallmentId === row.installmentId}
+                  duration={1000}
+                  className="px-4 py-2 bg-blue-100 text-xs text-blue-700 rounded-full hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"
+                >
+                  {payingInstallmentId === row.installmentId ? '...' : '✓'}
+                </LongPressButton>
+                )}
             </div>
           </div>
         ))}

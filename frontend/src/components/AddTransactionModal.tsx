@@ -3,6 +3,7 @@ import { useCreateTransaction } from "../hooks/useTransactions"
 import { transactionCategories } from "../utils/TransactionCategories"
 import { banks } from "../utils/Banks"
 import { formatNumber } from "../utils/NumberFormatter"
+import DatePicker from "./DatePicker"
 
 export default function AddModal({ onClose }: { onClose: () => void }) {
     const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
       category: '',
       bank: '',
       type: 'Withdraw',
+      date: new Date().toISOString(),
     })
     
     const createTransactionMutation = useCreateTransaction()
@@ -32,10 +34,10 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
           category: formData.category,
           bank: formData.bank,
           type: formData.type,
-          date: new Date().toISOString(),
+          date: formData.date,
         })
         
-        setFormData({ title: '', description: '', amount: '', category: '', bank: '', type: 'expense' })
+        // setFormData({ title: '', description: '', amount: '', category: '', bank: '', type: 'expense', date: new Date().toISOString() })
         onClose()
       } catch (error) {
         alert('خطا در اضافه کردن تراکنش')
@@ -66,15 +68,23 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
               required
             />
             
-            <input 
-              placeholder="مبلغ" 
-              type="text"
-              inputMode="numeric"
-              value={formatNumber(formData.amount)}
-              onChange={(e) => setFormData({...formData, amount: e.target.value.replace(/,/g, "")})}
-              className="w-full rounded-xl border border-gray-200 px-3 py-3 text-right" 
-              required
-            />
+            <div className="-mx-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4">
+              <input 
+                placeholder="مبلغ (تومان)" 
+                type="text"
+                inputMode="numeric"
+                value={formatNumber(formData.amount)}
+                onChange={(e) => setFormData({...formData, amount: e.target.value.replace(/,/g, "")})}
+                className="w-full rounded-xl border border-gray-200 px-3 py-3 text-right" 
+                required
+              />
+              <DatePicker
+                value={formData.date}
+                onChange={(isoDate) => setFormData({ ...formData, date: isoDate })}
+                placeholder="تاریخ تراکنش را انتخاب کنید"
+                useShortDisplayFormat= {true}
+              />
+            </div>
             
             <div className="text-right text-gray-600 mt-2">دسته‌بندی</div>
             <div className="-mx-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide px-4">

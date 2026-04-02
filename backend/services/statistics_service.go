@@ -13,11 +13,11 @@ func GetStatsTotalSpending(username string, category string, startDate *time.Tim
 	query := database.DB.Model(&database.TransactionEntity{}).Where("user_id = ?", userEntity.ID)
 
 	if startDate != nil {
-		query.Where("created_at >= ?", startDate)
+		query.Where("date >= ?", startDate)
 	}
 
 	if endDate != nil {
-		query.Where("created_at <= ?", endDate)
+		query.Where("date <= ?", endDate)
 	}
 
 	if category != "" {
@@ -46,11 +46,11 @@ func GetStatsSpendingForAllCategories(username string, startDate *time.Time, end
 		Where("t.user_id = ?", userEntity.ID)
 
 	if startDate != nil {
-		query = query.Where("t.created_at >= ?", startDate)
+		query = query.Where("t.date >= ?", startDate)
 	}
 
 	if endDate != nil {
-		query = query.Where("t.created_at <= ?", endDate)
+		query = query.Where("t.date <= ?", endDate)
 	}
 
 	query.Group("c.name").Scan(&results)
@@ -70,11 +70,11 @@ func GetStatsTransactionCount(username string, startDate *time.Time, endDate *ti
 	query := database.DB.Model(&database.TransactionEntity{}).Where("user_id = ?", userEntity.ID)
 
 	if startDate != nil {
-		query = query.Where("created_at >= ?", startDate)
+		query = query.Where("date >= ?", startDate)
 	}
 
 	if endDate != nil {
-		query = query.Where("created_at <= ?", endDate)
+		query = query.Where("date <= ?", endDate)
 	}
 
 	query.Count(&count)

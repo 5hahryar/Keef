@@ -1,12 +1,17 @@
 package database
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type TransactionEntity struct {
 	gorm.Model
 	Title       string
 	Amount      int64
 	Description string
+	Date		time.Time
 
 	BankID uint
 	Bank   BankEntity
