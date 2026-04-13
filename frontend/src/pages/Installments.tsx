@@ -166,7 +166,10 @@ export default function InstallmentsPage() {
 
           {activeTab === 'installments' && (
             <div>
+              <div className='flex'>
               <div className="text-lg font-bold mb-3">اقساط این ماه</div>
+              <div className="text-sm font-medium mr-1 mt-1">({new Intl.NumberFormat('fa-IR').format(installments.reduce((total, current) => total + current.amount, 0))} تومان)</div>
+              </div>
               <div className="space-y-4">
                 {installments.map((installment) => (
                   <div key={installment.id} className="bg-white rounded-3xl p-5 shadow-card">
