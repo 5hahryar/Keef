@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:name=".KeefApplication"
@@ -33,7 +34,7 @@
         <service android:name=".service.NotificationService"
             android:label="notificationService"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
@@ -46,7 +47,7 @@
                 android:value="ongoing|silent">
             </meta-data>
         </service>
-        <receiver android:name=".service.NotifReplyListener"/>
+<!--        <receiver android:name=".service.NotifReplyListener"/>-->
     </application>
 
 </manifest>
