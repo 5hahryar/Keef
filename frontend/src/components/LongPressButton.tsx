@@ -146,7 +146,7 @@ export default function LongPressButton({
       )}
 
       {/* Content */}
-      <span className={`relative z-10 flex items-center justify-center transition-opacity ${isPressing ? 'opacity-90' : ''}`}>
+      <span className={`relative z-10 flex items-center justify-center transition-opacity select-none ${isPressing ? 'opacity-90' : ''}`}>
         {children}
       </span>
     </button>
