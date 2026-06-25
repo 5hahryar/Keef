@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import InstallmentsPage from './pages/Installments'
 import InstallmentDetails from './pages/InstallmentDetails.tsx'
 import Assets from './pages/Assets.tsx'
+import AddTransaction from './pages/AddTransaction'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/', element: <Dashboard /> },
+          { path: '/addTransaction', element: <AddTransaction /> },
           { path: '/stats', element: <Stats /> },
           { path: '/installments', element: <InstallmentsPage /> },
           { path: '/installments/:id', element: <InstallmentDetails /> },

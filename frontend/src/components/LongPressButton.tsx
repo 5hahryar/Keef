@@ -6,6 +6,7 @@ interface LongPressButtonProps {
   className?: string
   disabled?: boolean
   duration?: number // Duration in milliseconds
+  progressClassName?: string
 }
 
 /**
@@ -18,6 +19,7 @@ export default function LongPressButton({
   className = '',
   disabled = false,
   duration = 1000, // 2 seconds default
+  progressClassName: progressClassName,
 }: LongPressButtonProps) {
   const [isPressing, setIsPressing] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -137,7 +139,7 @@ export default function LongPressButton({
       {/* Subtle progress background fill */}
       {isPressing && (
         <div
-          className="absolute inset-0 bg-blue-600 opacity-20"
+          className={`absolute inset-0 bg-blue-600 opacity-20 bg-blue-600 ${progressClassName}`}
           style={{
             width: `${progress}%`,
             transition: 'none',

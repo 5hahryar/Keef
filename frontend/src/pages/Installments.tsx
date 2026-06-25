@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loanService } from '../services/loanService'
 import LongPressButton from '../components/LongPressButton'
+import { transactionService } from '../services/transactionService'
+import { useTransactions } from '../hooks/useTransactions'
 
 type TabType = 'loans' | 'installments'
 
@@ -11,20 +13,34 @@ export default function InstallmentsPage() {
   const navigate = useNavigate()
   const { loans, loading: loansLoading, error: loansError, refetch: refetchLoans } = useLoans()
   const { installments, loading: installmentsLoading, error: installmentsError, refetch: refetchInstallments } = useCurrentMonthInstallments()
+  const { refetch: refetchTransactions } = useTransactions()
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('loans')
   const [payingInstallmentId, setPayingInstallmentId] = useState<string | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
-  const handlePayInstallment = async (loanId: string, installmentId: string) => {
+  const handlePayInstallment = async (installmentId: string) => {
     try {
-      setPayingInstallmentId(installmentId)
-      setPaymentError(null)
-      await loanService.payInstallment(loanId, installmentId)
+      const installment = installments.find(i => i.id === installmentId)
+      if (installment) {
+        setPayingInstallmentId(installment.id)
+        setPaymentError(null)
+        await loanService.payInstallment(installment.loan.id, installment.id)
+        await transactionService.createTransaction({
+          title: `پرداخت قسط ${installment.loan.name}`,
+          description: `ثبت اتوماتیک پرداخت قسط آیدی ${installmentId}`,
+          amount: installment.amount,
+          date: new Date().toISOString(),
+          category: 'Debt',
+          bank: 'Mellat',
+          type: 'Withdraw',
+        })
+      }
       // Clear any previous errors on success
       setPaymentError(null)
       // Refresh installments after successful payment
       await refetchInstallments()
+      await refetchTransactions()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'خطا در ثبت پرداخت'
       setPaymentError(errorMessage)
@@ -202,7 +218,7 @@ export default function InstallmentsPage() {
                       </div>
                       {installment.status !== 'paid' && (
                         <LongPressButton
-                          onLongPress={() => handlePayInstallment(installment.loan.id, installment.id)}
+                          onLongPress={() => handlePayInstallment(installment.id)}
                           disabled={payingInstallmentId === installment.id}
                           duration={1000}
                           className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"

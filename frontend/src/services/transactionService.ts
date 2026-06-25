@@ -20,4 +20,9 @@ export const transactionService = {
   deleteTransaction: async (id: number): Promise<void> => {
     await apiClient.delete(`/transactions/${id}/delete`)
   },
+
+  // Update transaction
+  updateTransaction: async (id: number, transaction: Omit<Transaction, 'id'>): Promise<void> => {
+    await apiClient.put(`/transactions/${id}`, transaction)
+  },
 }

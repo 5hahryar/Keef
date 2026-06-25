@@ -1,22 +1,44 @@
 import { useState } from "react"
-import { useCreateTransaction } from "../hooks/useTransactions"
+import { useCreateTransaction, useUpdateTransaction } from "../hooks/useTransactions"
 import { transactionCategories } from "../utils/TransactionCategories"
 import { banks } from "../utils/Banks"
 import { formatNumber } from "../utils/NumberFormatter"
 import DatePicker from "./DatePicker"
+import type { Transaction } from "../lib/api"
 
-export default function AddModal({ onClose }: { onClose: () => void }) {
+export type AddTransactionInitialValues = {
+  title?: string
+  description?: string
+  amount?: string
+  category?: string
+  bank?: string
+  type?: string
+  date?: string
+}
+
+export default function AddModal({
+  onClose,
+  editingTransaction,
+  initialValues,
+}: {
+  onClose: () => void
+  editingTransaction?: Transaction | null
+  initialValues?: AddTransactionInitialValues
+}) {
     const [formData, setFormData] = useState({
-      title: '',
-      description: '',
-      amount: '',
-      category: '',
-      bank: '',
-      type: 'Withdraw',
-      date: new Date().toISOString(),
+      title: editingTransaction?.title ?? initialValues?.title ?? '',
+      description: editingTransaction?.description ?? initialValues?.description ?? '',
+      amount: editingTransaction?.amount?.toString() ?? initialValues?.amount ?? '',
+      category: editingTransaction?.category ?? initialValues?.category ?? '',
+      bank: editingTransaction?.bank ?? initialValues?.bank ?? '',
+      type: editingTransaction?.type ?? initialValues?.type ?? 'Withdraw',
+      date: editingTransaction?.date ?? initialValues?.date ?? new Date().toISOString(),
     })
     
     const createTransactionMutation = useCreateTransaction()
+    const updateTransactionMutation = useUpdateTransaction()
+    const isEditing = !!editingTransaction
+    const isPending = createTransactionMutation.isPending || updateTransactionMutation.isPending
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault()
@@ -26,21 +48,28 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
         return
       }
   
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+        amount: parseInt(formData.amount),
+        category: formData.category,
+        bank: formData.bank,
+        type: formData.type,
+        date: formData.date,
+      }
+
       try {
-        await createTransactionMutation.mutateAsync({
-          title: formData.title,
-          description: formData.description,
-          amount: parseInt(formData.amount),
-          category: formData.category,
-          bank: formData.bank,
-          type: formData.type,
-          date: formData.date,
-        })
-        
-        // setFormData({ title: '', description: '', amount: '', category: '', bank: '', type: 'expense', date: new Date().toISOString() })
+        if (isEditing && editingTransaction) {
+          await updateTransactionMutation.mutateAsync({
+            id: editingTransaction.id,
+            transaction: payload,
+          })
+        } else {
+          await createTransactionMutation.mutateAsync(payload)
+        }
         onClose()
       } catch (error) {
-        alert('خطا در اضافه کردن تراکنش')
+        alert(isEditing ? 'خطا در ویرایش تراکنش' : 'خطا در اضافه کردن تراکنش')
       }
     }
   
@@ -55,7 +84,9 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
           >
             ×
           </button>
-          <div className="text-center text-lg font-extrabold flex-1">تراکنش جدید</div>
+          <div className="text-center text-lg font-extrabold flex-1">
+            {isEditing ? 'ویرایش تراکنش' : 'تراکنش جدید'}
+          </div>
           <div className="w-8" />
         </div>
           
@@ -122,10 +153,12 @@ export default function AddModal({ onClose }: { onClose: () => void }) {
           
             <button 
               type="submit" 
-              disabled={createTransactionMutation.isPending}
+              disabled={isPending}
               className="w-full rounded-pill bg-brand-blue text-white py-3 text-lg disabled:opacity-50 btn btn-ripple"
             >
-              {createTransactionMutation.isPending ? 'در حال اضافه کردن...' : 'اضافه کن'}
+              {isPending
+                ? (isEditing ? 'در حال ذخیره...' : 'در حال اضافه کردن...')
+                : (isEditing ? 'ذخیره' : 'اضافه کن')}
             </button>
             </div>
           </form>

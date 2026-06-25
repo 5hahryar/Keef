@@ -2,15 +2,30 @@ import { useState } from 'react'
 import { useTransactions } from '../hooks/useTransactions'
 import { useTotalSpending } from '../hooks/useStats'
 import AddModal from '../components/AddTransactionModal'
+import SpendingTransactionDetailSheet from '../components/SpendingTransactionDetailSheet'
 import getShamsiMonthRange from '../utils/ShamsiDateExt'
 import { transactionCategories } from '../utils/TransactionCategories'
 import { banks } from '../utils/Banks'
 import formatShamsiDate from '../utils/ShamsiDateFormatter'
+import type { Transaction } from '../lib/api'
+import type { AddTransactionInitialValues } from '../components/AddTransactionModal'
 
-export default function Dashboard() {
+interface DashboardProps {
+  addModalOpen?: boolean
+  addModalInitialValues?: AddTransactionInitialValues
+  onAddModalClose?: () => void
+}
+
+export default function Dashboard({
+  addModalOpen,
+  addModalInitialValues,
+  onAddModalClose,
+}: DashboardProps = {}) {
   const [open, setOpen] = useState(false)
   const [page] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
 
   // Fetch transactions
   const { data: transactions = [], isLoading: transactionsLoading, error: transactionsError } = useTransactions(page, selectedCategory)
@@ -19,6 +34,16 @@ export default function Dashboard() {
 
   // Fetch total spending
   const { data: totalSpending, isLoading: totalLoading } = useTotalSpending({ startDate: currentShamsiMonthDateRange.startDate.toISOString(), endDate: currentShamsiMonthDateRange.endDate.toISOString() })
+
+  const showAddModal = addModalOpen ?? open
+
+  const handleAddModalClose = () => {
+    if (onAddModalClose) {
+      onAddModalClose()
+    } else {
+      setOpen(false)
+    }
+  }
 
   return (
     <>
@@ -77,12 +102,17 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-2 mt-4 rounded-2xl">
               {transactions.map(t => (
-                <div key={t.id} className="flex items-center justify-between px-4 py-4 rounded-2xl bg-white">
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setSelectedTransaction(t)}
+                  className="w-full flex items-center justify-between px-4 py-4 rounded-2xl bg-white text-right"
+                >
                   <div className="text-gray-700">{t.title}
                     <div className="text-xs text-gray-400 mt-1">{formatShamsiDate(t.date)} | {Object.entries(banks).find(b => b[0] === t.bank)?.[1]}</div>
                   </div>
                   <div className="text-red-600 font-semibold">{new Intl.NumberFormat('fa-IR').format(Math.abs(t.amount))}</div>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -101,7 +131,30 @@ export default function Dashboard() {
       +
       </button>
 
-      {open && <AddModal onClose={() => setOpen(false)} />}
+      {showAddModal && (
+        <AddModal
+          initialValues={addModalInitialValues}
+          onClose={handleAddModalClose}
+        />
+      )}
+
+      {editingTransaction && (
+        <AddModal
+          editingTransaction={editingTransaction}
+          onClose={() => setEditingTransaction(null)}
+        />
+      )}
+
+      {selectedTransaction && (
+        <SpendingTransactionDetailSheet
+          transaction={selectedTransaction}
+          onClose={() => setSelectedTransaction(null)}
+          onEdit={() => {
+            setEditingTransaction(selectedTransaction)
+            setSelectedTransaction(null)
+          }}
+        />
+      )}
   </>
 
   )

@@ -19,8 +19,21 @@ export const useCreateTransaction = () => {
     mutationFn: (transaction: Omit<Transaction, 'id'>) => 
       transactionService.createTransaction(transaction),
     onSuccess: () => {
-      // Invalidate and refetch transactions
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
+    },
+  })
+}
+
+export const useUpdateTransaction = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, transaction }: { id: number; transaction: Omit<Transaction, 'id'> }) =>
+      transactionService.updateTransaction(id, transaction),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
   })
 }
@@ -31,8 +44,8 @@ export const useDeleteTransaction = () => {
   return useMutation({
     mutationFn: (id: number) => transactionService.deleteTransaction(id),
     onSuccess: () => {
-      // Invalidate and refetch transactions
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
   })
 }
