@@ -65,6 +65,42 @@ func GetTransactions(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, transactions)
 }
 
+// UpdateTransaction godoc
+// @Summary Update a transaction
+// @Description Update a specific transaction by ID for the authenticated user
+// @Tags transactions
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "Transaction ID"
+// @Param transaction body models.Transaction true "Transaction data"
+// @Success 200 {object} map[string]string "message"
+// @Failure 400 {object} map[string]string "message"
+// @Failure 404 {object} map[string]string "message"
+// @Router /transactions/{id} [put]
+func UpdateTransaction(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id!"})
+		return
+	}
+
+	var transaction models.Transaction
+	err = ctx.ShouldBindJSON(&transaction)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Request format is wrong!"})
+		return
+	}
+
+	err = services.UpdateTransaction(ctx.GetString("username"), id, &transaction)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Transaction not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Transaction updated successfully"})
+}
+
 // DeleteTransactions godoc
 // @Summary Delete a transaction
 // @Description Delete a specific transaction by ID for the authenticated user

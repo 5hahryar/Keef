@@ -63,6 +63,7 @@ func main() {
 		transactions.Use(middlewares.AuthMiddleware())
 		transactions.GET("", controllers.GetTransactions)
 		transactions.POST("/create", controllers.CreateTransaction)
+		transactions.PUT("/:id", controllers.UpdateTransaction)
 		transactions.DELETE("/:id/delete", controllers.DeleteTransactions)
 	}
 	statistics := api.Group("/statistics")
