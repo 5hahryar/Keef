@@ -14,3 +14,4 @@ services:
       - PORT=:8080
       - DB_PATH=/app/data/keef.db
       - JWT_SECRET=abcd
+      - GIN_MODE=debug

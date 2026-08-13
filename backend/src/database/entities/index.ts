@@ -1,9 +1,0 @@
-export { AssetEntity } from './asset.entity';
-export { AssetTransactionEntity } from './asset-transaction.entity';
-export { BankEntity } from './bank.entity';
-export { CategoryEntity } from './category.entity';
-export { InstallmentEntity } from './installment.entity';
-export { LoanEntity } from './loan.entity';
-export { TransactionEntity } from './transaction.entity';
-export { TransactionTypeEntity } from './transaction-type.entity';
-export { UserEntity } from './user.entity';

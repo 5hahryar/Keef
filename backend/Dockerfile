@@ -1,26 +1,25 @@
-FROM node:22-alpine AS builder
+FROM --platform=arm64 golang:alpine AS builder
+
+ENV CGO_ENABLED=1 \
+    GOOS=linux \
+    GOARCH=arm64
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
+# Install build dependencies in a single RUN command
+RUN apk add --no-cache clang lld musl-dev gcc
 
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY go.mod go.sum ./
+RUN go mod download
 
-COPY nest-cli.json tsconfig.json tsconfig.build.json ./
-COPY src ./src
+COPY . .
 
-RUN npm run build
+RUN go build -o main .
 
-FROM node:22-alpine
+FROM alpine:latest
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
+COPY --from=builder /app/main .
 
-COPY package.json package-lock.json* ./
-RUN npm install --omit=dev
-
-COPY --from=builder /app/dist ./dist
-
-CMD ["node", "dist/main.js"]
+CMD ["./main"]
