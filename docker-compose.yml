@@ -15,7 +15,6 @@ services:
       - PORT=:8080
       - JWT_SECRET=secret
       - DB_PATH=/app/data/kooleh.db
-      - GIN_MODE=debug
       - CORS_ALLOW_ORIGINS=http://localhost:3000
       
   frontend:
