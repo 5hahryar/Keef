@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTransactions } from '../hooks/useTransactions'
 import { useTotalSpending } from '../hooks/useStats'
 import AddModal from '../components/AddTransactionModal'
@@ -22,14 +22,16 @@ export default function Dashboard({
   onAddModalClose,
 }: DashboardProps = {}) {
   const [open, setOpen] = useState(false)
-  const [page] = useState(1)
+  const [page, setPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
+  const [showBackToTop, setShowBackToTop] = useState(false)
 
   // Fetch transactions
   const { data: transactions = [], isLoading: transactionsLoading, error: transactionsError } = useTransactions(page, selectedCategory)
-  
+
   const currentShamsiMonthDateRange = getShamsiMonthRange()
 
   // Fetch total spending
@@ -43,6 +45,54 @@ export default function Dashboard({
     } else {
       setOpen(false)
     }
+  }
+
+  // Reset pagination when the category filter changes
+  useEffect(() => {
+    setPage(1)
+    setAllTransactions([])
+  }, [selectedCategory])
+
+  // Accumulate pages into a single list, de-duplicating by id
+  useEffect(() => {
+    if (!transactions.length) return
+    setAllTransactions(prev => {
+      if (page === 1) return transactions
+      const existingIds = new Set(prev.map(t => t.id))
+      const newOnes = transactions.filter(t => !existingIds.has(t.id))
+      return [...prev, ...newOnes]
+    })
+  }, [transactions, page])
+
+  // Sentinel element that triggers loading the next page when it scrolls into view
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const [entry] = entries
+    if (entry.isIntersecting && !transactionsLoading && transactions.length > 0) {
+      setPage(p => p + 1)
+    }
+  }, [transactionsLoading, transactions.length])
+
+  useEffect(() => {
+    const el = loadMoreRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(handleObserver, { threshold: 1.0 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [handleObserver])
+
+  // Show back-to-top button after scrolling past one viewport height
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > window.innerHeight)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -90,7 +140,7 @@ export default function Dashboard({
             </div>
           )}
 
-          {transactionsLoading ? (
+          {transactionsLoading && page === 1 ? (
             <div className="mt-4 space-y-2">
               {[1, 2, 3].map(i => (
                 <div key={i} className="bg-white rounded-2xl shadow-card p-4 animate-pulse">
@@ -101,7 +151,7 @@ export default function Dashboard({
             </div>
           ) : (
             <div className="space-y-2 mt-4 rounded-2xl">
-              {transactions.map(t => (
+              {allTransactions.map(t => (
                 <button
                   key={t.id}
                   type="button"
@@ -114,6 +164,16 @@ export default function Dashboard({
                   <div className="text-red-600 font-semibold">{new Intl.NumberFormat('fa-IR').format(Math.abs(t.amount))}</div>
                 </button>
               ))}
+
+              {/* Sentinel for infinite scroll */}
+              <div ref={loadMoreRef} className="h-4" />
+
+              {transactionsLoading && page > 1 && (
+                <div className="bg-white rounded-2xl shadow-card p-4 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              )}
             </div>
           )}
         </main>
@@ -130,6 +190,21 @@ export default function Dashboard({
       >
       +
       </button>
+
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          aria-label="Back to top"
+          className="fixed left-6 w-12 h-12 rounded-full bg-brand-blue text-white shadow-lg flex items-center justify-center"
+          style={{
+            position: 'fixed',
+            left: '1.5rem',
+            bottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
+          }}
+        >
+          ↑
+        </button>
+      )}
 
       {showAddModal && (
         <AddModal
@@ -159,6 +234,3 @@ export default function Dashboard({
 
   )
 }
-
-
-
