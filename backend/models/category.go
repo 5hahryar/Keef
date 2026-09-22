@@ -11,4 +11,6 @@ const (
     Debt Category = "Debt"
     Clothes Category = "Clothes"
     Other Category = "Other"
+    Utilities Category = "Utilities"
+    Wellness Category = "Wellness"
 )

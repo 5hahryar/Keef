@@ -24,6 +24,8 @@ func seedCategories(db *gorm.DB) error {
 		{ID: 7, Name: "Debt"},
 		{ID: 8, Name: "Clothes"},
 		{ID: 9, Name: "Other"},
+		{ID: 10, Name: "Utilities"},
+		{ID: 11, Name: "Wellness"},
 	}
 
 	for _, c := range categories {

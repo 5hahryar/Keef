@@ -8,4 +8,6 @@ export const transactionCategories = {
     "Debt": "بدهی",
     "Clothes": "پوشاک",
     "Other": "متفرقه",
+    "Utilities": "روزمره",
+    "Wellness": "سلامتی",
   }

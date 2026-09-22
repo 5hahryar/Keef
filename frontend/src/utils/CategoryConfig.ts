@@ -62,6 +62,18 @@ export const categoryConfigs: Record<string, CategoryConfig> = {
     color: '#6B7280', // Gray
     icon: '📦',
   },
+  Utilities: {
+    name: 'Utilities',
+    persianName: 'روزمره',
+    color: '#f5429c', // Pink
+    icon: '🧰',
+  },
+  Wellness: {
+    name: 'Wellness',
+    persianName: 'سلامتی',
+    color: '#adf542', // Green
+    icon: '🧘',
+  },
 };
 
 export function getCategoryConfig(categoryName: string): CategoryConfig {
